@@ -1035,3 +1035,4 @@ C:\Users\prdb\RiderProjects\BlazorApp1\BlazorApp1\bin\Debug\net8.0\Newtonsoft.Js
 C:\Users\prdb\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\webcil\Newtonsoft.Json.wasm
 C:\Users\prdb\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\compressed\kaa4a1xgjc.gz
 C:\Users\prdb\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\BlazorApp1.sourcelink.json
+C:\Users\prdb\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\scopedcss\Pages\TestingApi.razor.rz.scp.css

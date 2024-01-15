@@ -91,23 +91,8 @@ main[b-5383j6hyu8] {
 }
 
 .nav-button-test[b-da4la3n260] {
-    background: red;
-    border: 2px solid transparent;
-    margin-left: 0.75rem;
-    width: 1.25rem;
-    height: 1.25rem;
     horiz-align: center;
-}
-
-.nav-button-test:hover[b-da4la3n260] {
-    border-color: #ffc107;
-    color: #0a53be;
-    background: transparent;
-    margin-left: 0.75rem;
-    width: 1.25rem;
-    height: 1.25rem;
-    horiz-align: center;
-    
+    padding:.5rem 1rem
 }
 
 .bi[b-da4la3n260] {
@@ -179,4 +164,8 @@ main[b-5383j6hyu8] {
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+}
+/* /Pages/TestingApi.razor.rz.scp.css */
+.TestingElement[b-kd6uzzd62y]{
+    display: flex;
 }

@@ -1,8 +1,11 @@
 @page "/TestingApi"
+
 @using BlazorApp1.Models
 @using Newtonsoft.Json
 @inject HttpClient Http
 @using System.Net
+@using System.Net.Cache
+@using System.Reflection.Metadata
 <h3>TestingApi</h3>
 @if (_userInfos == null)
 {
@@ -12,37 +15,80 @@
 }
 else
 {
-    <table class="table">
-        <thead>
+    <div>
+        <table class="table">
+            <thead>
             <tr>
                 <th>Id</th>
                 <th>FullName</th>
                 <th>Login</th>
                 <th>Password</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             @foreach (var element in _userInfos)
             {
                 <tr>
-                    <td>@element.Id</td>
+                    <td>@_idElement</td>
                     <td>@element.FullName</td>
                     <td>@element.Login</td>
                     <td>@element.Password</td>
-                </tr> 
+                </tr>
+                ++_idElement;
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <form method="post">
+        <div style="display: flex; margin: 20px">
+            <p style="width: 7rem;">Login:
+            </p>
+            <form method="post">
+                <input type="text" @bind="_model.Login" placeholder="Login:"/>
+            </form>
+        </div>
+        <div style="display: flex; margin: 20px">
+            <p style="width: 7rem">Password:
+            </p>
+            <input type="password" @bind="_model.Password" placeholder="Password:">
+        </div>
+        <div style="display: flex; margin: 20px">
+            <p style="width: 7rem">UserName:
+            </p>
+            <input type="text" @bind="_model.UserName" placeholder="UserName:">
+        </div>
+        <div style="display: flex; margin: 20px">
+            <p style="width: 7rem">Role:
+            </p>
+            <input type="number" @bind="_model.Role" placeholder="Role:">
+        </div>
+        </form>
+    </div>
+    <button class="butoon-create" style="background: limegreen; text-align: center; border-radius: 10px; border-color: darkgreen" onclick="@AddNewElement">+ Create new</button>
+    <button onclick="" style="text-align: center; background: indianred; border-color: darkred; border-radius: 10px">- Drop</button>
+    <p>@Ok</p>
+    <p>@Login</p>
+    <p>@Password</p>
+    <p>@UserName</p>
+    <p>@Role</p>
 }
 @code
 {
+    private string Ok;
+    private string Login = _model.Login;
+    private string Password = _model.Password;
+    private string UserName = _model.UserName;
+    private string Role = _model.Role;
+    const string PathApi = "http://localhost:5110/api/Controller2";
+    private int _idElement = 1;
     private List<UserInfo>? _userInfos;
 
     protected override async Task OnInitializedAsync()
     {
         using (var client = new HttpClient())
         {
-            HttpResponseMessage requestMessage = await client.GetAsync("http://localhost:5110/api/Controller2/GetUserInfo");
+            HttpResponseMessage requestMessage = await client.GetAsync($"{PathApi}/GetUserInfo");
             if (requestMessage.IsSuccessStatusCode)
             {
                 string content = await requestMessage.Content.ReadAsStringAsync();
@@ -50,4 +96,48 @@ else
             }
         }
     }
+
+    private async Task AddNewElement()
+    {
+        
+        using (var cont = new HttpClient())
+        {
+            if (Login != "" || Login != null)
+            {
+                if (Password != "" || Password != null)
+                {
+                    if (UserName != "" || UserName != null)
+                    {
+                        if (Role != "" || Role != null)
+                        {
+                            HttpResponseMessage responseMessage = await cont.GetAsync($"{PathApi}/GetSave?login={Login}&password={Password}&nameUser={UserName}&role={Role}");
+                            if (responseMessage.IsSuccessStatusCode)
+                            {
+                                Ok = "No";
+                            }
+                            else
+                            {
+                                Ok = "Ok";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+@code
+{
+    private class Model
+    {
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public string UserName { get; set; }
+        public string Role { get; set; }
+    }
+
+    private static Model _model = new Model();
 }
