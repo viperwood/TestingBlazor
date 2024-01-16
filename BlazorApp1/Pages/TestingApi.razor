@@ -15,6 +15,7 @@
 }
 else
 {
+    @(_idElement = 1)
     <div>
         <table class="table">
             <thead>
@@ -41,45 +42,47 @@ else
     </div>
     <div>
         <form method="post">
-        <div style="display: flex; margin: 20px">
-            <p style="width: 7rem;">Login:
-            </p>
-            <form method="post">
-                <input type="text" @bind="_model.Login" placeholder="Login:"/>
-            </form>
-        </div>
-        <div style="display: flex; margin: 20px">
-            <p style="width: 7rem">Password:
-            </p>
-            <input type="password" @bind="_model.Password" placeholder="Password:">
-        </div>
-        <div style="display: flex; margin: 20px">
-            <p style="width: 7rem">UserName:
-            </p>
-            <input type="text" @bind="_model.UserName" placeholder="UserName:">
-        </div>
-        <div style="display: flex; margin: 20px">
-            <p style="width: 7rem">Role:
-            </p>
-            <input type="number" @bind="_model.Role" placeholder="Role:">
-        </div>
+            <div style="display: flex; margin: 20px">
+                <p style="width: 7rem;">Login:
+                </p>
+                <form method="post">
+                    <input type="text" @bind="_model.Login" placeholder="Login:"/>
+                </form>
+            </div>
+            <div style="display: flex; margin: 20px">
+                <p style="width: 7rem">Password:
+                </p>
+                <input type="text" @bind="_model.Password" placeholder="Password:">
+            </div>
+            <div style="display: flex; margin: 20px">
+                <p style="width: 7rem">UserName:
+                </p>
+                <input type="text" @bind="_model.UserName" placeholder="UserName:">
+            </div>
+            <div style="display: flex; margin: 20px">
+                <p style="width: 7rem">Role:
+                </p>
+                <input type="number" @bind="_model.Role" placeholder="Role:">
+            </div>
         </form>
     </div>
     <button class="butoon-create" style="background: limegreen; text-align: center; border-radius: 10px; border-color: darkgreen" onclick="@AddNewElement">+ Create new</button>
     <button onclick="" style="text-align: center; background: indianred; border-color: darkred; border-radius: 10px">- Drop</button>
-    <p>@Ok</p>
-    <p>@Login</p>
-    <p>@Password</p>
-    <p>@UserName</p>
-    <p>@Role</p>
+    <p>@a</p>
+    <p>@_login</p>
+    <p>@_password</p>
+    <p>@_userName</p>
+    <p>@_role</p>
+    
 }
 @code
+
 {
-    private string Ok;
-    private string Login = _model.Login;
-    private string Password = _model.Password;
-    private string UserName = _model.UserName;
-    private string Role = _model.Role;
+    private string? a;
+    private string _login = _model.Login;
+    private string _password = _model.Password;
+    private string _userName = _model.UserName;
+    private string _role = _model.Role;
     const string PathApi = "http://localhost:5110/api/Controller2";
     private int _idElement = 1;
     private List<UserInfo>? _userInfos;
@@ -99,30 +102,15 @@ else
 
     private async Task AddNewElement()
     {
-        
+        _login = _model.Login;
+        _password = _model.Password;
+        _userName = _model.UserName;
+        _role = _model.Role;
         using (var cont = new HttpClient())
         {
-            if (Login != "" || Login != null)
-            {
-                if (Password != "" || Password != null)
-                {
-                    if (UserName != "" || UserName != null)
-                    {
-                        if (Role != "" || Role != null)
-                        {
-                            HttpResponseMessage responseMessage = await cont.GetAsync($"{PathApi}/GetSave?login={Login}&password={Password}&nameUser={UserName}&role={Role}");
-                            if (responseMessage.IsSuccessStatusCode)
-                            {
-                                Ok = "No";
-                            }
-                            else
-                            {
-                                Ok = "Ok";
-                            }
-                        }
-                    }
-                }
-            }
+            a = $"{PathApi}/GetSave?login={_login}&password={_password}&nameUser={_userName}&role={_role}";
+            HttpResponseMessage responseMessage = await cont.GetAsync($"{PathApi}/GetSave?nameUser={_login}&login={_password}&password={_userName}&role={_role}");
+            OnInitializedAsync();
         }
     }
 
@@ -133,11 +121,13 @@ else
 {
     private class Model
     {
+        
+
         public string Login { get; set; }
         public string Password { get; set; }
         public string UserName { get; set; }
         public string Role { get; set; }
     }
 
-    private static Model _model = new Model();
+    private static Model _model = new();
 }
