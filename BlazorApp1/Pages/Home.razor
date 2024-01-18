@@ -1,7 +1,82 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components
+
+<div class="col-sm-3">
+   <div class="accordion-item">
+       <div class="accordion-header">
+           <button class="accordion-button" @onclick="Toggle">
+               <b>sadffgsdgscvg</b>
+           </button>
+       </div>
+       @if (ShowCardBody)
+       {
+       <div class="accordion-body">
+           <form method="post">
+               <div style="display: flex; margin: 20px">
+                   <p style="width: 7rem;">Login:
+                   </p>
+                   <form method="post">
+                       <input type="text" placeholder="Login:"/>
+                   </form>
+               </div>
+               <div style="display: flex; margin: 20px">
+                   <p style="width: 7rem">Password:
+                   </p>
+                   <input type="text" placeholder="Password:">
+               </div>
+               <div style="display: flex; margin: 20px">
+                   <p style="width: 7rem">UserName:
+                   </p>
+                   <input type="text" placeholder="UserName:">
+               </div>
+               <div style="display: flex; margin: 20px">
+                   <p style="width: 7rem">Role:
+                   </p>
+                   <input type="number" placeholder="Role:">
+               </div>
+           </form>
+       </div>
+       }
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool ShowCardBody { get; set; } = false;
+    public void Toggle()
+    {
+        ShowCardBody = !ShowCardBody;
+    }
+}
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+<button onclick="@Test" class="nav-button-test">
+    <p>zvbxcvzcvzxcvzcxv</p>
+</button>
+<p>@_a
+</p>
+<input type="number" class="input-group-text" @bind="_model.Number">
+
+@code
+{
+    private int _a;
+    private void Test()
+    {
+        _a++;
+        int numb = _model.Number;
+        if (numb != null && numb != 0)
+        {
+            _a = numb;
+        }
+    }
+}
+@code
+{
+    private static Model _model = new();
+    private class Model
+    {
+        public int Number { get; set; }
+    }
+}

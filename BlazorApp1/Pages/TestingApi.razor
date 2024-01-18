@@ -16,7 +16,6 @@
 }
 else
 {
-    @(_idElement = 1)
     <div>
         <table class="table">
             <thead>
@@ -40,44 +39,54 @@ else
             }
             </tbody>
         </table>
+    </div> 
+    <div class="col-sm-3">
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="accordion-button" onclick="@Togle" style="background: forestgreen; color: black">
+                    <b>Create new user</b>
+                </button>
+            </div>
+            @if (ShouBold)
+            {
+                <div class="accordion-body">
+                    <input type="text" placeholder="User name:" style="margin: 20px" @bind="_model.UserName">
+                    <input type="text" placeholder="Login:" style="margin: 20px" @bind="_model.Login">
+                    <input type="password" placeholder="Password:" style="margin: 20px" @bind="_model.Password">
+                    <input type="number" placeholder="Role:" style="margin: 20px" @bind="_model.Role">
+                    <button class="nav-button-test" style="background: limegreen; border-radius: 10px; border-color: darkgreen; vertical-align: center" onclick="@AddNewElement">
+                        <p>+ Add ib database</p>
+                    </button>
+                </div>
+            }
+        </div>
     </div>
-    <div>
-        <form method="post">
-            <div style="display: flex; margin: 20px">
-                <p style="width: 7rem;">Login:
-                </p>
-                <form method="post">
-                    <input type="text" @bind="_model.Login" placeholder="Login:"/>
-                </form>
+    <div class="col-sm-3">
+        <div class="accordion-item">
+            <div class="accordion-header">
+                <button class="accordion-button">
+                    <b>Delete</b>
+                </button>
             </div>
-            <div style="display: flex; margin: 20px">
-                <p style="width: 7rem">Password:
-                </p>
-                <input type="text" @bind="_model.Password" placeholder="Password:">
-            </div>
-            <div style="display: flex; margin: 20px">
-                <p style="width: 7rem">UserName:
-                </p>
-                <input type="text" @bind="_model.UserName" placeholder="UserName:">
-            </div>
-            <div style="display: flex; margin: 20px">
-                <p style="width: 7rem">Role:
-                </p>
-                <input type="number" @bind="_model.Role" placeholder="Role:">
-            </div>
-        </form>
+            @*@if (ClickButton)
+            {
+                <div class="accordion-body">
+                    <input type="text">
+                </div>
+            }*@
+        </div>
     </div>
-    <button class="butoon-create" style="background: limegreen; text-align: center; border-radius: 10px; border-color: darkgreen" onclick="@AddNewElement">+ Create new</button>
-    <button onclick="" style="text-align: center; background: indianred; border-color: darkred; border-radius: 10px">- Drop</button>
-    <p>@_a</p>
-    <p>@_test</p>
-    
 }
 @code
-
 {
-    private string? _a;
-    private string? _test;
+    [Parameter] public bool ShouBold { get; set; } = false;
+    private void Togle()
+    {
+        ShouBold = !ShouBold;
+    }
+}
+@code
+{
     private string? _login;
     private string? _password;
     private string? _userName;
@@ -85,7 +94,6 @@ else
     const string PathApi = "http://localhost:5110/api/Controller2";
     private int _idElement = 1;
     private List<UserInfo>? _userInfos;
-
     protected override async Task OnInitializedAsync()
     {
         using (var client = new HttpClient())
@@ -98,20 +106,18 @@ else
             }
         }
     }
-
     private async Task AddNewElement()
     {
         using (var cont = new HttpClient())
         {
+            _idElement = 1;
             _login = _model.Login;
             _password = _model.Password;
             _userName = _model.UserName;
             _role = _model.Role;
-            _a = $"{PathApi}/GetSave?login={_login}&password={_password}&nameUser={_userName}&role={_role}";
             HttpResponseMessage responseMessage = await cont.GetAsync($"{PathApi}/GetSave?nameUser={_login}&login={_password}&password={_userName}&role={_role}");
             if (responseMessage.IsSuccessStatusCode)
             {
-                _test = "true";
                 uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
             }
         }
