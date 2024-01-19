@@ -16,16 +16,17 @@
 }
 else
 {
+    _idElement = 1;
     <div>
         <table class="table">
             <thead>
-            <tr>
-                <th>Id</th>
-                <th>FullName</th>
-                <th>Login</th>
-                <th>Password</th>
-            </tr>
-            </thead>
+                <tr>
+                    <th>Id</th>
+                    <th>FullName</th>
+                    <th>Login</th>
+                    <th>Password</th>
+                </tr>
+            </thead>+
             <tbody>
             @foreach (var element in _userInfos)
             {
@@ -40,7 +41,22 @@ else
             </tbody>
         </table>
     </div> 
-    <div class="col-sm-3">
+    <div style="display: flex">
+        <button class="nav-button-test" style="border-radius: 10px" onclick="@Beack">
+            <b>
+                ←
+            </b>
+        </button>
+        <b style="border-color: black; width: 20rem; padding-left: 10rem; padding-right: 10rem;">
+            @_numberPage
+        </b>
+        <button class="nav-button-test" style="border-radius: 10px" onclick="@Next">
+            <b>
+                →
+            </b>
+        </button>
+    </div>
+<div class="col-sm-3">
         <div class="accordion-item">
             <div class="accordion-header">
                 <button class="accordion-button" onclick="@Togle" style="background: forestgreen; color: black">
@@ -54,7 +70,7 @@ else
                     <input type="text" placeholder="Login:" style="margin: 20px" @bind="_model.Login">
                     <input type="password" placeholder="Password:" style="margin: 20px" @bind="_model.Password">
                     <input type="number" placeholder="Role:" style="margin: 20px" @bind="_model.Role">
-                    <button class="nav-button-test" style="background: limegreen; border-radius: 10px; border-color: darkgreen; vertical-align: center" onclick="@AddNewElement">
+                    <button style="background: limegreen; border-radius: 10px; border-color: darkgreen; vertical-align: center" onclick="@AddNewElement">
                         <p>+ Add ib database</p>
                     </button>
                 </div>
@@ -64,36 +80,71 @@ else
     <div class="col-sm-3">
         <div class="accordion-item">
             <div class="accordion-header">
-                <button class="accordion-button">
+                <button class="accordion-button" onclick="@TargetButton" style="background: firebrick; color: black;">
                     <b>Delete</b>
                 </button>
             </div>
-            @*@if (ClickButton)
+            @if (ClickButton)
             {
-                <div class="accordion-body">
-                    <input type="text">
+                <div class="accordion-body" style="">
+                    <input type="text" placeholder="Login for delete: " @bind="_dropModel.DropLogin" style="margin: 20px">
+                    <button style="border-radius: 10px; vertical-align: center; background: indianred; border-color: darkred" onclick="@DeleteElement">
+                        <b>Delete</b>
+                    </button>
                 </div>
-            }*@
+            }
         </div>
+        @(_costElementInPageStart)
+        @(_costElementInPageEnd)
     </div>
 }
+
+
+
 @code
 {
+    [Parameter] public bool ClickButton { get; set; } = false;
+    private void TargetButton()
+    {
+        ClickButton = !ClickButton;
+    }
     [Parameter] public bool ShouBold { get; set; } = false;
     private void Togle()
     {
         ShouBold = !ShouBold;
     }
+    private static Model _model = new();
+    private class Model
+    {
+        public string? Login { get; set; }
+        public string? Password { get; set; }
+        public string? UserName { get; set; }
+        public string? Role { get; set; }
+    } 
+    private static DropModel _dropModel = new();
+    private class DropModel
+    {
+        public string? DropLogin { get; set; }
+    }
 }
+
+
+
+
 @code
 {
     private string? _login;
+    private string? _loginFromDrop;
     private string? _password;
     private string? _userName;
     private string? _role;
+    private int _numberPage = 1;
+    private int _costElementInPageStart = 1;
+    private int _costElementInPageEnd = 4;
     const string PathApi = "http://localhost:5110/api/Controller2";
     private int _idElement = 1;
     private List<UserInfo>? _userInfos;
+    //Получение данных из апи в таблицу
     protected override async Task OnInitializedAsync()
     {
         using (var client = new HttpClient())
@@ -102,15 +153,17 @@ else
             if (requestMessage.IsSuccessStatusCode)
             {
                 string content = await requestMessage.Content.ReadAsStringAsync();
-                _userInfos = JsonConvert.DeserializeObject<List<UserInfo>>(content)!.ToList();
+                _userInfos = JsonConvert.DeserializeObject<List<UserInfo>>(content)!.Where(x => x.Id >= _costElementInPageStart && x.Id <= _costElementInPageEnd).ToList();
             }
         }
     }
+    
+    
+    //отправка данных на сохранение в апи
     private async Task AddNewElement()
     {
         using (var cont = new HttpClient())
         {
-            _idElement = 1;
             _login = _model.Login;
             _password = _model.Password;
             _userName = _model.UserName;
@@ -122,15 +175,38 @@ else
             }
         }
     }
-}
-@code
-{
-    private static Model _model = new();
-    private class Model
+    //отправка данных на удаление из апи
+    private async Task DeleteElement()
     {
-        public string? Login { get; set; }
-        public string Password { get; set; }
-        public string UserName { get; set; }
-        public string Role { get; set; }
+        _loginFromDrop = _dropModel.DropLogin; 
+        using (var client = new HttpClient())
+        {
+            HttpResponseMessage responseMessage = await client.GetAsync($"{PathApi}/GetDrop?login={_loginFromDrop}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                uriHelper.NavigateTo(uriHelper.Uri, forceLoad: true);
+            }
+        }
     }
 }
+
+@code
+     {
+         
+         private void Next()
+         {
+             
+             _costElementInPageStart += 4;
+             _costElementInPageEnd += 4;
+             OnInitializedAsync();
+             _numberPage++;
+         }
+         private void Beack()
+         {
+             
+             _costElementInPageStart -= 4;
+             _costElementInPageEnd -= 4;
+             OnInitializedAsync();
+             _numberPage--;
+         }
+     }
